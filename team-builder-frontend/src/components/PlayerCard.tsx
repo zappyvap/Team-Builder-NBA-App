@@ -1,4 +1,5 @@
 import React from 'react'
+import './PlayerCard.css'
 
 interface Props{
     player_id : string
@@ -11,11 +12,11 @@ interface Props{
 
 const PlayerCard : React.FC<Props>= ({photo_url,full_name,team_name,position}) => {
   return (
-    <div>
+    <div className='playerCardBackground'>
       <img src = {photo_url} alt = {full_name}></img>
-      <p>{position}</p>
-      <p>{full_name}</p>
-      <p>{team_name}</p>
+      <p className='positionText'>{position}</p>
+      <p className='nameText'>{full_name}</p>
+      <p className='teamText'>{team_name}</p>
 
     </div>
   )

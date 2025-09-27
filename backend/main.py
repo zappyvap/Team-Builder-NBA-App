@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import CommonPlayerInfo
-import uvicorn
 import random
 import time
 
@@ -24,7 +23,8 @@ app.add_middleware( # stops any CORS error
 )
 
 def _get_player_photo_url(player_id: int): # helper function for photo
-    return f"https://cdn.nba.com/headshots/nba/latest/134x100/{player_id}.png"
+    return f"https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/{player_id}.png"
+    
 
 
 @app.get("/api/nba/random-players/{count}")

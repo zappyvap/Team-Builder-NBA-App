@@ -10,8 +10,11 @@ import time
 
 app = FastAPI() # creates the app
 
-origins = [
-    "http://localhost:5174" # is the link that the frontend calls to fetch the data
+origins = [ # covers the links that the app will run and won't run anything else
+    "http://localhost:5174",     
+    "http://127.0.0.1:5174",     
+    "http://localhost:5173",     
+    "http://127.0.0.1:5173"
 ]
 
 app.add_middleware( # stops any CORS error
@@ -27,16 +30,13 @@ def _get_player_photo_url(player_id: int): # helper function for photo
     
 
 
-@app.get("/api/nba/random-players/{count}")
-def get_random_players(count: int = 3):
+@app.get("/api/nba/random-players")
+def get_random_players():
     try:
         all_active_players = players.get_active_players() # gets all the players
-        
-        if count <= 0 or count > len(all_active_players): # checks if the count is invalid
-            count = 3
 
         # gets 3 random players
-        random_players_subset = random.sample(all_active_players, count)
+        random_players_subset = random.sample(all_active_players, 3)
         
         player_data_list = []
         for player in random_players_subset:

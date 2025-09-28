@@ -1,17 +1,17 @@
 # Node (frontend)
-frontend/node_modules/
-frontend/build/
-frontend/dist/
-frontend/.cache/
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/*.log
+team-builder-frontend/node_modules/
+team-builder-frontend/build/
+team-builder-frontend/dist/
+team-builder-frontend/.cache/
+team-builder-frontend/npm-debug.log*
+team-builder-frontend/yarn-debug.log*
+team-builder-frontend/yarn-error.log*
+team-builder-frontend/*.log
 
 # React env files
-frontend/.env
-frontend/.env.local
-frontend/.env.*.local
+team-builder-frontend/.env
+team-builder-frontend/.env.local
+team-builder-frontend/.env.*.local
 
 # Python (backend)
 backend/venv/

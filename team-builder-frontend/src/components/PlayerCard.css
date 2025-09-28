@@ -1,48 +1,48 @@
-.playerCardBackground{ 
-    display: flex;
-    position: relative;
-    top: -50px;
-    flex-direction: column;
-    border-style: solid;
-    border-width: 6px;
-    border-radius: 15px;
-    padding: 5px;
-    border-color: dimgray;
-    margin: 30px;
-    height: 360px;
-    background: linear-gradient(gold,white);
-    box-shadow: 2px 2px 2px 2px rgb(44, 43, 43);
-}   
-
-.positionText{
-    position: relative;
-    top: -80px;
-    color: black;
-    font-size: 30px;
-    font-weight: 600;
-    
+.playerCardBackground { 
+  display: flex;
+  flex-direction: column;
+  align-items: center;     
+  justify-content: flex-start;
+  border: 6px solid dimgray;
+  border-radius: 15px;
+  padding: 10px;
+  margin: 30px;
+  width: 220px;              
+  height: 340px;             
+  background: linear-gradient(gold, white);
+  box-shadow: 2px 2px 2px 2px rgb(44, 43, 43);
+  overflow: hidden;          /
 }
 
-.nameText{
-    position: relative;
-    top: -20px;
-    color: black;
-    font-size: 30px;
-    font-weight: 700;
+.playerImage {
+  width: 100%;               
+  max-height: 150px;       
+  object-fit: contain;
+  margin-bottom: 10px;
 }
 
-.teamText{
-    position: relative;
-    top: -120px;
-    color: black;
-    font-size: 20px;
-    font-weight: 600;
+.nameText {
+  color: black;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin: 5px 0;
+  word-wrap: break-word;    
+  overflow-wrap: break-word; 
 }
 
-.title{
-    position: relative;
-    top: -100px;
-    text-align: center;
-    font-size: 55px;
-    margin-bottom: 20px;
+.positionText {
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin: 5px 0;
+}
+
+.teamText {
+  color: black;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  margin: 5px 0;
 }

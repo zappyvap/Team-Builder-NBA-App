@@ -4,3 +4,45 @@
     padding-left: 30px;
     padding-right: 30px;
 }
+
+.mainContent{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+}
+
+.yourTeamTitle{
+    text-align: center;
+    position: relative;
+    margin: 5px;
+}
+
+.allContent {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.selectedPlayerContent {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin-right: 20px;
+}
+
+.selectedPlayer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
+  border: 6px solid gray;
+  padding: 10px;
+  transform: scale(0.5);
+  transform-origin: top center;
+}
+
+.title{
+    text-align: center;
+    font-size: 50px
+}

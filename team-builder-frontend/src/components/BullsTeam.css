@@ -1,0 +1,14 @@
+.bullsBackground{
+    background-color: red;
+    border-color: white;
+    border-radius: 10px;
+    border-width: 3px;
+    border-style: solid;
+}
+
+.bullsText{
+    font-weight: 600;
+    font-size: large;
+    text-align: center;
+    padding: 5px;
+}

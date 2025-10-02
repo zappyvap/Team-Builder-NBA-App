@@ -1,0 +1,14 @@
+.celticsBackground{
+    background-color: rgb(16, 129, 16);
+    border-color: white;
+    border-radius: 10px;
+    border-width: 3px;
+    border-style: solid;
+}
+
+.celticsText{
+    font-weight: 600;
+    font-size: large;
+    text-align: center;
+    padding: 5px;
+}

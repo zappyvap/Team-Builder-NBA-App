@@ -2,11 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import CommonPlayerInfo
+from nba_api.stats.endpoints import PlayerCareerStats
 import random
 import time
-
-
-
 
 app = FastAPI() # creates the app
 
@@ -29,8 +27,7 @@ def _get_player_photo_url(player_id: int): # helper function for photo
     return f"https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/{player_id}.png"
     
 
-
-@app.get("/api/nba/random-players")
+@app.get("/api/nba/random-players") # creates endpoint
 def get_random_players():
     try:
         all_active_players = players.get_active_players() # gets all the players
@@ -62,3 +59,18 @@ def get_random_players():
     except Exception as e: # catches any errors with gathering the data from the API
         print(f"An error occurred: {e}")
         return {"error": "Internal server error fetching player data"}, 500
+
+@app.get("/api/nba/player-stats")
+def get_player_stats(playerList):
+    player_per_game_stats = []
+    for player in playerList:
+        player_id = player['id']
+        stats = PlayerCareerStats(player_id=player_id).get_data_frames()[0].to_dict('records')[-1]
+        player_per_game_stats.append({
+            "id" : player_id,
+            "ppg" : stats.get('PTS_PER_G'),
+            "apg" : stats.get('AST_PER_G'),
+            "rpg" : stats.get('REB_PER_G'),
+            "spg" : stats.get('STL_PER_G'),
+            "bpg" : stats.get('BLK_PER_G')
+        })

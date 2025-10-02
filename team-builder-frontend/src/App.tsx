@@ -2,13 +2,28 @@ import { useEffect, useState } from 'react';
 import './App.css'
 import PlayerCard from './components/PlayerCard';
 import SelectedPlayer from './components/SelectedPlayer';
+import BullsTeam from './components/BullsTeam';
+import WarriorsTeam from './components/WarriorsTeam';
+import CelticsTeam from './components/CelticsTeam';
+import {GoogleGenerativeAI} from "@google/generative-ai"
 
-interface PlayerInfo{
+const geminiKey = "AIzaSyA-ifrgTDtB28eLKiSXlzPpsheCyZV5RUc";
+const genAI = new GoogleGenerativeAI(geminiKey);
+
+interface PlayerInfo{ // player object
   id : string
   full_name : string
   position : string
   team_name : string
   photo_url : string
+}
+
+interface PlayerStats{
+  id : string
+  ppg : string
+  apg : string
+  spg : string
+  bpg : string
 }
 
 function App() {
@@ -17,8 +32,64 @@ function App() {
   const [error, setError] = useState(null);
   const [selectedList, setSelectedList] = useState<PlayerInfo[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState(false);
+  const [selectedOpponent, setSelectedOpponent] = useState('');
+  const [AIText,setAIText] = useState('');
+  const [AILoading, setAILoading] = useState(false);
+  const [playerStatsList,setPlayerStatsList] = useState<PlayerStats[]>([]);
 
-  useEffect(() =>{
+  async function aiCall(){ // this handles the api call to the ai
+    setAILoading(true);
+    const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
+
+    const prompt = 
+      `Write a narrative between ${displayPlayers} and the ${selectedOpponent} playing a head to head matchup, make sure you state who wins and state the players on both sides and make it only two paragraphs`;
+    
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    setAIText(response.text());
+    setAILoading(false);
+}
+
+  const displayPlayers = () =>{ // this is a helper function that lists out the players the user selected
+    const playerNames = selectedList.map(player => player.full_name);
+    return playerNames.join(', ');
+  }
+
+
+
+  const determineWinner = () =>{
+    const api_url = 'http://localhost:8000/api/nba/player-stats';
+
+    fetch(api_url) // fetch call to python venv and grabs the data from the nba api
+      .then((res) =>{
+        if (!res.ok){
+          throw new Error(`HTTP error, Status: ${res.status}`);
+        }
+        return res.json()
+      }) // gets the json
+      .then((json) => {
+        // takes the results of the json and adds it to the player list
+        if (Array.isArray(json) && json.length > 0) {
+          setPlayerStatsList(json);
+          console.log(playerStatsList)
+          setLoading(false);
+        } else {
+          console.log("No Results Found, Please Try Again.");
+          setPlayerStatsList([]);
+          setLoading(false);
+        }
+      })
+      .catch((err) => { // catches error if there is one
+        console.error("Fetch failed:", err);
+        setError(err.message);
+        setLoading(false); 
+      });
+
+      // call algorithm function here
+  }
+
+
+  useEffect(() =>{ // this calls the backend to which calls the nba api to get the random players
     setLoading(true);
     const api_url = 'http://localhost:8000/api/nba/random-players';  // url for backend
 
@@ -49,6 +120,14 @@ function App() {
 
   },[selectedList])
 
+  useEffect(()=>{ // this calls the ai function if the user has selected their opponent
+    if(selectedOpponent.length !== 0 && AIText.length === 0){
+      aiCall()
+    }
+    console.log(displayPlayers());
+  },[selectedOpponent])
+
+
   if(loading){ // for when its loading
     return(
       <>
@@ -71,7 +150,7 @@ function App() {
     </>
     )
   }
-  if(error!== null){
+  if(error!== null){ // for when there is an error
     return(
       <div>
         There was an error
@@ -79,43 +158,70 @@ function App() {
     )
   }
 
+  if(AILoading){ // for when the ai response is loading
+    return(
+      <h1>Loading Results...</h1>
+    )
+  }
+
   return (
-    <div className='allContent'>
-      <div className='selectedPlayerContent'>
-      <h1 className='yourTeamTitle'>Your Team</h1>
-        <div className='selectedPlayer'>
-        {selectedPlayer && (
-          
-            selectedList.map((m)=>(
-                <SelectedPlayer
-                key={m.id}
+    <>
+      {selectedList.length >= 5? (
+        selectedOpponent.length !== 0 ? (
+          <div>
+            {AIText}
+          </div>
+        ):(
+          <>
+            <div className='opponentUnit'>
+              <h1>Choose Your Opponent</h1>
+              <div className='opponentsBox'>
+                <BullsTeam setSelectedOpponent={setSelectedOpponent}/>
+                <WarriorsTeam setSelectedOpponent={setSelectedOpponent}/>
+                <CelticsTeam setSelectedOpponent={setSelectedOpponent}/>
+              </div>
+            </div>
+          </>
+          )
+      ):(
+      <div className='allContent'>
+        <div className='selectedPlayerContent'>
+        <h1 className='yourTeamTitle'>Your Team</h1>
+          <div className='selectedPlayer'>
+          {selectedPlayer && (
+            
+              selectedList.map((m)=>(
+                  <SelectedPlayer
+                  key={m.id}
+                  photo_url={m.photo_url}
+                  player_name={m.full_name}
+                  />
+              ))
+          )}
+          </div>
+        </div>
+        <div className='mainContent'>
+          <h1 className='title'>NBA Team Builder</h1>
+          <div className='playerCard'>
+            {playerList.map((m) => (
+              <PlayerCard
+                key = {m.id}
+                player_id={m.id}
+                full_name={m.full_name}
+                position={m.position}
+                team_name={m.team_name}
                 photo_url={m.photo_url}
-                player_name={m.full_name}
-                />
-            ))
-        )}
+                player={m}
+                setSelectedList={setSelectedList}
+                selectedList={selectedList}
+                setSelectedPlayer={setSelectedPlayer}
+              />
+            ))}
+          </div>
         </div>
       </div>
-      <div className='mainContent'>
-        <h1 className='title'>NBA Team Builder</h1>
-        <div className='playerCard'>
-          {playerList.map((m) => (
-            <PlayerCard
-              key = {m.id}
-              player_id={m.id}
-              full_name={m.full_name}
-              position={m.position}
-              team_name={m.team_name}
-              photo_url={m.photo_url}
-              player={m}
-              setSelectedList={setSelectedList}
-              selectedList={selectedList}
-              setSelectedPlayer={setSelectedPlayer}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   )
 
 }

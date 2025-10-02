@@ -3,12 +3,16 @@ import "./WarriorsTeam.css"
 
 interface Props{
     setSelectedOpponent : (s : string) => void
+    setOpponentScore : (x : number) => void
 }
 
 
-const WarriorsTeam : React.FC<Props>= ({setSelectedOpponent}) => {
+const WarriorsTeam : React.FC<Props>= ({setSelectedOpponent, setOpponentScore}) => {
+  const score = 223;
+
   const onClick = () =>{
     setSelectedOpponent("2017 Golden State Warriors")
+    setOpponentScore(score);
   }
 
 

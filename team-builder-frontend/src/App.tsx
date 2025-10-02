@@ -23,6 +23,7 @@ interface PlayerStats{
   id : string
   ppg : string
   apg : string
+  rpg : string
   spg : string
   bpg : string
 }
@@ -37,13 +38,25 @@ function App() {
   const [AIText,setAIText] = useState('');
   const [AILoading, setAILoading] = useState(false);
   const [playerStatsList,setPlayerStatsList] = useState<PlayerStats[]>([]);
+  const [userScore, setUserScore] = useState(0);
+  const [opponentScore, setOpponentScore] = useState(0);
 
   async function aiCall(){ // this handles the api call to the ai
+    determineWinner();
+
     setAILoading(true);
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
-    const prompt = 
-      `Write a narrative between ${displayPlayers} and the ${selectedOpponent} playing a head to head matchup, make sure you state who wins and state the players on both sides and make it only two paragraphs`;
+    let prompt;
+
+    if(userScore >= opponentScore){
+      prompt = 
+      `write a narrative about ${displayPlayers()} beating ${selectedOpponent} in a head to head match in one paragraph`;
+    }
+    else{
+      prompt = 
+        `write a narrative about ${selectedOpponent} beating ${displayPlayers()} in a head to head match in one paragraph`;
+    }
     
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -55,8 +68,6 @@ function App() {
     const playerNames = selectedList.map(player => player.full_name);
     return playerNames.join(', ');
   }
-
-
 
   const determineWinner = () =>{
     const api_url = 'http://localhost:8000/api/nba/player-stats';
@@ -86,9 +97,20 @@ function App() {
         setLoading(false); 
       });
 
-      // call algorithm function here
+      setUserScore(winnerAlgorithm());
   }
 
+  const winnerAlgorithm = () =>{
+    return playerStatsList.reduce((acc,e) =>{
+      const p = parseInt(e.ppg);
+      const a = parseInt(e.apg) * 2;
+      const r = parseInt(e.rpg) * 1.75;
+      const s = parseInt(e.spg) * 3;
+      const b = parseInt(e.bpg) * 4;
+      acc = acc + p + a + r + s + b;
+      return acc;
+    },0)
+  }
 
   useEffect(() =>{ // this calls the backend to which calls the nba api to get the random players
     setLoading(true);
@@ -177,9 +199,9 @@ function App() {
             <div className='opponentUnit'>
               <h1>Choose Your Opponent</h1>
               <div className='opponentsBox'>
-                <BullsTeam setSelectedOpponent={setSelectedOpponent}/>
-                <WarriorsTeam setSelectedOpponent={setSelectedOpponent}/>
-                <CelticsTeam setSelectedOpponent={setSelectedOpponent}/>
+                <BullsTeam setOpponentScore={setOpponentScore} setSelectedOpponent={setSelectedOpponent}/>
+                <WarriorsTeam setOpponentScore={setOpponentScore} setSelectedOpponent={setSelectedOpponent}/>
+                <CelticsTeam  setOpponentScore={setOpponentScore} setSelectedOpponent={setSelectedOpponent}/>
               </div>
             </div>
           </>

@@ -60,3 +60,4 @@ dist-ssr
 /backend/__pycache__/
 /backend/ .pytest_cache/
 team-builder-frontend/node_modules/
+team-builder-frontend/.env

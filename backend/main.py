@@ -5,6 +5,7 @@ from nba_api.stats.endpoints import CommonPlayerInfo
 from nba_api.stats.endpoints import PlayerCareerStats
 import random
 import time
+from pydantic import BaseModel
 
 app = FastAPI() # creates the app
 
@@ -22,6 +23,9 @@ app.add_middleware( # stops any CORS error
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+class Player(BaseModel):
+    id : str
 
 def _get_player_photo_url(player_id: int): # helper function for photo
     return f"https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/{player_id}.png"
@@ -60,17 +64,20 @@ def get_random_players():
         print(f"An error occurred: {e}")
         return {"error": "Internal server error fetching player data"}, 500
 
-@app.get("/api/nba/player-stats")
-def get_player_stats(playerList):
+
+
+@app.post("/api/nba/player-stats")
+def get_player_stats(playerList : list[Player]):
     player_per_game_stats = []
     for player in playerList:
-        player_id = player['id']
+        player_id = int(player.id)
         stats = PlayerCareerStats(player_id=player_id).get_data_frames()[0].to_dict('records')[-1]
         player_per_game_stats.append({
-            "id" : player_id,
+            "id" : str(player_id),
             "ppg" : stats.get('PTS_PER_G'),
             "apg" : stats.get('AST_PER_G'),
             "rpg" : stats.get('REB_PER_G'),
             "spg" : stats.get('STL_PER_G'),
             "bpg" : stats.get('BLK_PER_G')
         })
+    return player_per_game_stats

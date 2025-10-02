@@ -9,6 +9,7 @@ import {GoogleGenerativeAI} from "@google/generative-ai"
 
 
 const geminiKey = import.meta.env.VITE_GEMINI_KEY;
+console.log("Gemini Key Status:", geminiKey ? "Key loaded successfully." : "Key is NOT loading!");
 const genAI = new GoogleGenerativeAI(geminiKey);
 
 interface PlayerInfo{ // player object
@@ -72,13 +73,15 @@ function App() {
   const determineWinner = () =>{
     const api_url = 'http://localhost:8000/api/nba/player-stats';
 
-    fetch(api_url) // fetch call to python venv and grabs the data from the nba api
-      .then((res) =>{
-        if (!res.ok){
-          throw new Error(`HTTP error, Status: ${res.status}`);
-        }
-        return res.json()
-      }) // gets the json
+    const payload = selectedList.map(player => ({id:player.id}));
+
+    fetch(api_url, {
+      method: 'POST', // using a post request instead of a get request to handle the parameter
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload) // this sends the player id to the request
+    })
       .then((json) => {
         // takes the results of the json and adds it to the player list
         if (Array.isArray(json) && json.length > 0) {

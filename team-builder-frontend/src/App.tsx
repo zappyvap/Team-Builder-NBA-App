@@ -7,7 +7,8 @@ import WarriorsTeam from './components/WarriorsTeam';
 import CelticsTeam from './components/CelticsTeam';
 import {GoogleGenerativeAI} from "@google/generative-ai"
 
-const geminiKey = "AIzaSyA-ifrgTDtB28eLKiSXlzPpsheCyZV5RUc";
+
+const geminiKey = import.meta.env.VITE_GEMINI_KEY;
 const genAI = new GoogleGenerativeAI(geminiKey);
 
 interface PlayerInfo{ // player object

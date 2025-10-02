@@ -9,7 +9,7 @@ team-builder-frontend/yarn-error.log*
 team-builder-frontend/*.log
 
 # React env files
-team-builder-frontend/.env
+team-builder-frontend/src/.env
 team-builder-frontend/.env.local
 team-builder-frontend/.env.*.local
 

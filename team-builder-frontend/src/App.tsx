@@ -9,7 +9,6 @@ import {GoogleGenerativeAI} from "@google/generative-ai"
 
 
 const geminiKey = import.meta.env.VITE_GEMINI_KEY;
-console.log("Gemini Key Status:", geminiKey ? "Key loaded successfully." : "Key is NOT loading!");
 const genAI = new GoogleGenerativeAI(geminiKey);
 
 interface PlayerInfo{ // player object
@@ -38,19 +37,23 @@ function App() {
   const [selectedOpponent, setSelectedOpponent] = useState('');
   const [AIText,setAIText] = useState('');
   const [AILoading, setAILoading] = useState(false);
-  const [playerStatsList,setPlayerStatsList] = useState<PlayerStats[]>([]);
-  const [userScore, setUserScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
+  const [userWin,setUserWin] = useState(false);
+  const [userScore, setUserScore] = useState(0);
 
   async function aiCall(){ // this handles the api call to the ai
-    determineWinner();
-
     setAILoading(true);
+
+    const playerScoreArr = await determineWinner();
+    const userCalculatedScore = winnerAlgorithm(playerScoreArr);
+    setUserScore(userCalculatedScore);
+
     const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
     let prompt;
 
-    if(userScore >= opponentScore){
+    if(userCalculatedScore >= opponentScore){
+      setUserWin(true);
       prompt = 
       `write a narrative about ${displayPlayers()} beating ${selectedOpponent} in a head to head match in one paragraph`;
     }
@@ -70,47 +73,58 @@ function App() {
     return playerNames.join(', ');
   }
 
-  const determineWinner = () =>{
+  const determineWinner = async () =>{
     const api_url = 'http://localhost:8000/api/nba/player-stats';
 
-    const payload = selectedList.map(player => ({id:player.id}));
+    const payload = selectedList.map(player => String(player.id));
 
-    fetch(api_url, {
-      method: 'POST', // using a post request instead of a get request to handle the parameter
+    return fetch(api_url, {
+      method: 'POST',
       headers: {
           'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload) // this sends the player id to the request
+      body: JSON.stringify(payload)
     })
-      .then((json) => {
-        // takes the results of the json and adds it to the player list
+    .then(response => {
+        // check if everything is good with the response
+        if (!response.ok) {
+            // throwing an error here moves execution to the .catch() block
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        // returns the promise that converts the raw stream to a JSON object
+        return response.json(); 
+    })
+    .then(json => {
+
         if (Array.isArray(json) && json.length > 0) {
-          setPlayerStatsList(json);
-          console.log(playerStatsList)
           setLoading(false);
+          return json;
+          
         } else {
           console.log("No Results Found, Please Try Again.");
-          setPlayerStatsList([]);
           setLoading(false);
+          return []
         }
-      })
-      .catch((err) => { // catches error if there is one
+    })
+    .catch((err) => { 
+        // This catches network errors AND the error thrown in step 1
         console.error("Fetch failed:", err);
         setError(err.message);
         setLoading(false); 
-      });
+        return []
+    });
 
-      setUserScore(winnerAlgorithm());
   }
 
-  const winnerAlgorithm = () =>{
-    return playerStatsList.reduce((acc,e) =>{
+  const winnerAlgorithm = (playerList) =>{
+    return playerList.reduce((acc : number, e : PlayerStats) =>{
       const p = parseInt(e.ppg);
       const a = parseInt(e.apg) * 2;
       const r = parseInt(e.rpg) * 1.75;
       const s = parseInt(e.spg) * 3;
       const b = parseInt(e.bpg) * 4;
       acc = acc + p + a + r + s + b;
+      console.log(acc)
       return acc;
     },0)
   }
@@ -190,17 +204,46 @@ function App() {
     )
   }
 
+
+  /**
+   * This is the main loading window of the code.
+   * This will keep loading random player objects until the user selects 5
+   * different players to their team.
+   * It will then display the opponents that they can play.
+   * Once they click an opponent, it will generate the score for the opponent and 
+   * the user score and determine if they win or not, and display accordingly.
+   */
   return (
     <>
       {selectedList.length >= 5? (
         selectedOpponent.length !== 0 ? (
-          <div>
-            {AIText}
-          </div>
+          <>
+            {userWin ?(
+              <>
+                <div className='aiDisplay'>
+                  <h1 className='aiHeader'>You Win!</h1>
+                  <div className='aiTextBox'>
+                  <p className='aiText'>{AIText}</p>
+                  </div>
+                  <p>Your Score: {userScore}</p>
+                </div>
+              </>
+            ):(
+              <>
+                <div className='aiDisplay'>
+                  <h1 className='aiHeader'>You Lose!</h1>
+                  <div className='aiTextBox'>
+                  <p className='aiText'>{AIText}</p>
+                  </div>
+                  <p>Your Score: {userScore}</p>
+                </div>
+              </>
+            )}
+          </>
         ):(
           <>
             <div className='opponentUnit'>
-              <h1>Choose Your Opponent</h1>
+              <h1 className='opponentHeader'>Choose Your Opponent</h1>
               <div className='opponentsBox'>
                 <BullsTeam setOpponentScore={setOpponentScore} setSelectedOpponent={setSelectedOpponent}/>
                 <WarriorsTeam setOpponentScore={setOpponentScore} setSelectedOpponent={setSelectedOpponent}/>

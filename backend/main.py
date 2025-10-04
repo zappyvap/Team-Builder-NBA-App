@@ -1,3 +1,5 @@
+import math
+from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from nba_api.stats.static import players
@@ -6,6 +8,7 @@ from nba_api.stats.endpoints import PlayerCareerStats
 import random
 import time
 from pydantic import BaseModel
+from nba_api.stats.library.parameters import PerMode36
 
 app = FastAPI() # creates the app
 
@@ -48,7 +51,7 @@ def get_random_players():
             
             #adds the player data from the dictionary and appends it to the final list as an object
             player_data_list.append({
-                "id": player_id,
+                "id": str(player_id),
                 "full_name": player_info_data.get('DISPLAY_FIRST_LAST'),
                 "team_name": player_info_data.get('TEAM_NAME'),
                 "position": player_info_data.get('POSITION'),
@@ -67,17 +70,27 @@ def get_random_players():
 
 
 @app.post("/api/nba/player-stats")
-def get_player_stats(playerList : list[Player]):
+def get_player_stats(idList : List[str]):
     player_per_game_stats = []
-    for player in playerList:
-        player_id = int(player.id)
-        stats = PlayerCareerStats(player_id=player_id).get_data_frames()[0].to_dict('records')[-1]
-        player_per_game_stats.append({
-            "id" : str(player_id),
-            "ppg" : stats.get('PTS_PER_G'),
-            "apg" : stats.get('AST_PER_G'),
-            "rpg" : stats.get('REB_PER_G'),
-            "spg" : stats.get('STL_PER_G'),
-            "bpg" : stats.get('BLK_PER_G')
-        })
+    for id in idList:
+        stats = PlayerCareerStats(int(id)).get_data_frames()[0].to_dict('records')[-1]
+        games_played = stats.get('GP')
+        if (games_played == 0):
+            player_per_game_stats.append({
+                "id" : str(id),
+                "ppg": 5,
+                "apg": 2,
+                "rbg": 2,
+                "spg": .5,
+                "bpg": .5,
+            })
+        else:
+            player_per_game_stats.append({
+                "id": str(id),
+                "ppg": round(stats.get('PTS', 0) / games_played), # Use .get() with a default for safety
+                "apg": round(stats.get('AST', 0) / games_played),
+                "rpg": round(stats.get('REB', 0) / games_played),
+                "spg": round(stats.get('STL', 0) / games_played),
+                "bpg": round(stats.get('BLK', 0) / games_played)
+            })
     return player_per_game_stats

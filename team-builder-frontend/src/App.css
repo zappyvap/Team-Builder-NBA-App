@@ -89,5 +89,19 @@
 .aiDisplay{
   display: flex;
   flex-direction: column;
-  justify-items: flex-start;
+  align-items: center;
+}
+
+.userScore{
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.playAgainButton{
+  border: 3px solid white;
+  border-radius: 8px;
+  width: 100px;
+  transform: scale(2);
+  background-color: mediumaquamarine;
+  cursor: pointer;
 }

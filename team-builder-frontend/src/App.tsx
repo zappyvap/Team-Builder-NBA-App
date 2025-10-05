@@ -204,6 +204,16 @@ function App() {
     )
   }
 
+  // this resets all the values so that the user can use the program again
+  const handlePlayAgain = () =>{ 
+    setPlayerList([]);
+    setSelectedList([]);
+    setSelectedOpponent('');
+    setAIText('');
+    setOpponentScore(0);
+    setUserWin(false);
+    setUserScore(0);
+  }
 
   /**
    * This is the main loading window of the code.
@@ -225,7 +235,8 @@ function App() {
                   <div className='aiTextBox'>
                   <p className='aiText'>{AIText}</p>
                   </div>
-                  <p>Your Score: {userScore}</p>
+                  <p className='userScore'>Your Score: {userScore}</p>
+                  <button onClick={handlePlayAgain} className='playAgainButton'>Play Again</button>
                 </div>
               </>
             ):(
@@ -235,7 +246,8 @@ function App() {
                   <div className='aiTextBox'>
                   <p className='aiText'>{AIText}</p>
                   </div>
-                  <p>Your Score: {userScore}</p>
+                  <p className='userScore'>Your Score: {userScore}</p>
+                  <button onClick={handlePlayAgain} className='playAgainButton'>Play Again</button>
                 </div>
               </>
             )}

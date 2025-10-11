@@ -9,6 +9,7 @@ import {GoogleGenerativeAI} from "@google/generative-ai";
 
 
 const geminiKey = import.meta.env.VITE_GEMINI_KEY;
+const BACKEND_KEY = import.meta.env.VITE_BACKEND_KEY || 'http://localhost:8000';
 const genAI = new GoogleGenerativeAI(geminiKey);
 
 interface PlayerInfo{ // player object
@@ -74,7 +75,7 @@ function App() {
   }
 
   const determineWinner = async () =>{
-    const api_url = 'http://localhost:8000/api/nba/player-stats';
+    const api_url = `${BACKEND_KEY}/api/nba/player-stats`;
 
     const payload = selectedList.map(player => String(player.id));
 
@@ -131,7 +132,7 @@ function App() {
 
   useEffect(() =>{ // this calls the backend to which calls the nba api to get the random players
     setLoading(true);
-    const api_url = 'http://localhost:8000/api/nba/random-players';  // url for backend
+    const api_url = `${BACKEND_KEY}/api/nba/random-players`;  // url for backend
 
     fetch(api_url) // fetch call to python venv and grabs the data from the nba api
       .then((res) =>{

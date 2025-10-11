@@ -17,6 +17,7 @@ origins = [ # covers the links that the app will run and won't run anything else
     "http://127.0.0.1:5174",     
     "http://localhost:5173",     
     "http://127.0.0.1:5173"
+    "https://team-builder-nba-app-frontend.onrender.com"
 ]
 
 app.add_middleware( # stops any CORS error

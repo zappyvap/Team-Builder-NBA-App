@@ -2,7 +2,13 @@ import React from 'react'
 import './PlayerCard.css'
 
 
-// make sure you git ignore the venv folder somehow!!
+interface PlayerInfo{ // player object
+  id : string
+  full_name : string
+  position : string
+  team_name : string
+  photo_url : string
+}
 
 interface Props{
     player_id : string
@@ -10,17 +16,17 @@ interface Props{
     team_name : string
     position : string
     photo_url : string
-    player : any
-    setSelectedList : any
-    selectedList : any
-    setSelectedPlayer : any
+    player : PlayerInfo
+    setSelectedList : (p : PlayerInfo[] | ((prev : PlayerInfo[]) => PlayerInfo[])) => void 
+    selectedList : PlayerInfo[]
+    setSelectedPlayer : (b : boolean) => void
 }
 
 
 const PlayerCard : React.FC<Props>= ({setSelectedPlayer,player,photo_url,full_name,team_name,position, setSelectedList}) => {
 
   const onClick = () =>{
-    setSelectedList((prev) => [...prev,player])
+    setSelectedList((prev : PlayerInfo[]) => [...prev,player])
     setSelectedPlayer(true)
   }
 

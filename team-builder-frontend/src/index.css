@@ -1,40 +1,36 @@
 :root {
-  /* Ensure the display is flex for centering */
+  
   display: flex;
   justify-content: center;
-  /* Adjust padding-top for better vertical positioning */
+
   padding-top: 50px; 
-  min-height: 100vh; /* Ensure the background covers the full viewport height */
+  min-height: 100vh; 
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* Switch back to Dark Theme for root text/elements */
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.95); /* Light text for dark background */
-  background-color: transparent; /* Let the body handle the background color */
+  color: rgba(255, 255, 255, 0.95); 
+  background-color: transparent; 
 
 
-/* Apply the theme to the entire body/page 
-  /* Resetting default margins and ensuring full coverage */
+
   margin: 0;
   width: 100vw;
   min-height: 100vh;
   
-  /* NBA Theme Background: Dark, Classic Basketball Texture */
-  background-color: #121226; /* Very deep navy/black */
+  background-color: #121226; 
   
-  /* Repeating image pattern for a subtle basketball texture (hex pattern) */
   background-image: 
     repeating-linear-gradient(45deg, #181836 25%, transparent 25%, transparent 75%, #181836 75%, #181836),
     repeating-linear-gradient(45deg, #181836 25%, #121226 25%, #121226 75%, #181836 75%, #181836);
   background-position: 0 0, 10px 10px;
   background-size: 20px 20px;
-  background-attachment: fixed; /* Keeps the background static on scroll */
+  background-attachment: fixed; 
 }
 
-/* We should update the root element to occupy the full page width for centering to work well */
+
 #root {
   max-width: 1280px;
   width: 100%;
